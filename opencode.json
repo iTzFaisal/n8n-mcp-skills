@@ -4,7 +4,7 @@
     "n8n-mcp": {
       "type": "local",
       "command": ["npx", "n8n-mcp"],
-      "enabled": false,
+      "enabled": true,
       "environment": {
         "MCP_MODE": "stdio",
         "LOG_LEVEL": "error",
