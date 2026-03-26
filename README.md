@@ -1,6 +1,6 @@
 # 🚀 n8n MCP Skills Starter
 
-> **AI-Powered Workflow Automation** — Supercharge Claude Code & OpenCode with intelligent n8n workflow building capabilities
+> **AI-Powered Workflow Automation** — Supercharge Claude Code with intelligent n8n workflow building capabilities
 
 Transform how you build n8n workflows by letting AI do the heavy lifting. This repository provides a curated knowledge base that gives AI agents deep expertise in n8n workflow automation through MCP (Model Context Protocol) tools.
 
@@ -9,6 +9,7 @@ Transform how you build n8n workflows by letting AI do the heavy lifting. This r
 ## ✨ What is this?
 
 Imagine having an n8n expert sitting beside you that can:
+
 - 🔍 **Find the perfect node** from 2,000+ options in seconds
 - ✅ **Validate configurations** before you deploy
 - 🏗️ **Build workflows** using proven architectural patterns
@@ -21,23 +22,23 @@ This repository makes that possible. It's not code—it's **knowledge**, careful
 
 ## 🎯 What You Can Do
 
-| Capability | How It Works |
-|------------|--------------|
-| **🔎 Node Discovery** | Ask: "Find nodes for Slack integration" → AI searches 2,000+ nodes and returns matches with examples |
-| **🛠️ Workflow Creation** | Describe: "Create a workflow that monitors RSS and posts to Discord" → AI builds it step-by-step |
-| **✅ Configuration Validation** | Paste any node config → AI validates required fields, expressions, and connections |
-| **📚 Pattern Library** | Ask: "How do I handle webhooks safely?" → AI shows proven patterns from production workflows |
-| **💻 Code Assistance** | Get help with JavaScript/Python in Code nodes, including n8n-specific APIs |
-| **🔧 Expression Help** | Debug `{{ $json.foo }}` expressions with instant error detection |
+| Capability                      | How It Works                                                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **🔎 Node Discovery**           | Ask: "Find nodes for Slack integration" → AI searches 2,000+ nodes and returns matches with examples |
+| **🛠️ Workflow Creation**        | Describe: "Create a workflow that monitors RSS and posts to Discord" → AI builds it step-by-step     |
+| **✅ Configuration Validation** | Paste any node config → AI validates required fields, expressions, and connections                   |
+| **📚 Pattern Library**          | Ask: "How do I handle webhooks safely?" → AI shows proven patterns from production workflows         |
+| **💻 Code Assistance**          | Get help with JavaScript/Python in Code nodes, including n8n-specific APIs                           |
+| **🔧 Expression Help**          | Debug `{{ $json.foo }}` expressions with instant error detection                                     |
 
 ---
 
 ## 📦 What's Inside
 
-### 7 Core Skills (~44,000 lines of documentation)
+### 7 Core Skills (~22,000 lines of documentation)
 
 ```
-.claude/skills/
+.agents/skills/
 ├── n8n-code-javascript/      # JavaScript in Code nodes
 ├── n8n-code-python/          # Python in Code nodes
 ├── n8n-expression-syntax/    # n8n {{ }} expression language
@@ -48,18 +49,29 @@ This repository makes that possible. It's not code—it's **knowledge**, careful
 ```
 
 Each skill includes:
+
 - **Quick Start** — Get going immediately
 - **Real Examples** — Copy-paste patterns from production workflows
 - **Common Errors** — Avoid pitfalls others have hit
 - **Best Practices** — Industry-tested approaches
 - **Integration Guide** — How skills work together
 
+### Repository Structure
+
+- `.agents/skills/` — Source skill directories
+- `.claude/skills/` — Symlinks to `.agents/skills/` for Claude Code
+- `.mcp.json.example` — Example MCP configuration for Claude Code
+- `opencode.json.example` — Example MCP configuration for OpenCode
+- `skills-lock.json` — Skill version tracking from upstream sources
+
 ### Ready-to-Use MCP Configuration
 
-- `.mcp.json` — For Claude Code / Cloud Code
-- `opencode.json` — For OpenCode environments
+The repository includes example configuration files:
 
-Just update your n8n API credentials and you're ready to go.
+- `.mcp.json.example` — For Claude Code
+- `opencode.json.example` — For OpenCode
+
+Copy these files and update your n8n API credentials to get started.
 
 ---
 
@@ -77,27 +89,33 @@ Just update your n8n API credentials and you're ready to go.
 
 ### 2️⃣ Configure the MCP Server
 
-Edit both `.mcp.json` and `opencode.json`:
+```bash
+# Copy the example configuration
+cp .mcp.json.example .mcp.json
+
+# Edit .mcp.json and update your API credentials
+```
 
 ```json
 {
-  "N8N_API_URL": "http://localhost:5678",
-  "N8N_API_KEY": "your-api-key-here"
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "N8N_API_URL": "http://localhost:5678",
+        "N8N_API_KEY": "your-api-key-here"
+      }
+    }
+  }
 }
 ```
 
-### 3️⃣ Enable in Your AI Agent
+### 3️⃣ Enable in Claude Code
 
-**For Claude Code / Cloud Code:**
 ```bash
+# Restart Claude Code
 # The MCP server will be auto-detected from .mcp.json
-# Just restart Claude Code and it will find n8n-mcp
-```
-
-**For OpenCode:**
-```bash
-# The opencode.json configuration is already set up
-# OpenCode will detect the n8n-mcp plugin automatically
 ```
 
 ---
@@ -139,18 +157,19 @@ AI: Uses n8n-expression-syntax skill → checks syntax
 ### Documentation-First Design
 
 This is **not** a traditional code repository:
+
 - ❌ No build system
 - ❌ No dependencies to install
 - ❌ No tests to run
 - ✅ Pure knowledge, organized as AI-consumable skills
 
-### Dual Platform Support
+### Skill Management
 
-Skills are mirrored for both platforms:
-- `.claude/skills/` → Claude Code / Cloud Code
-- `.opencode/skills/` → OpenCode Plugin
+Skills are centrally managed in `.agents/skills/` and symlinked to `.claude/skills/`:
 
-Same content, different locations—both stay in sync.
+- Skills are tracked via `skills-lock.json`
+- Source: [czlonkowski/n8n-skills](https://github.com/czlonkowski/n8n-skills)
+- Claude Code automatically discovers skills from `.claude/skills/`
 
 ### Cross-Referenced Knowledge
 
@@ -169,21 +188,21 @@ n8n-workflow-patterns
 
 The n8n-mcp server provides:
 
-| Category | Tools |
-|----------|-------|
-| **Node Discovery** | `search_nodes`, `get_node`, `validate_node` |
+| Category                | Tools                                                                    |
+| ----------------------- | ------------------------------------------------------------------------ |
+| **Node Discovery**      | `search_nodes`, `get_node`, `validate_node`                              |
 | **Workflow Management** | `n8n_create_workflow`, `n8n_update_partial_workflow`, `n8n_get_workflow` |
-| **Template Library** | `search_templates`, `n8n_deploy_template` (2,700+ templates) |
-| **Validation** | `validate_workflow`, `n8n_validate_workflow` |
-| **Execution** | `n8n_test_workflow`, `n8n_executions` |
-| **Documentation** | `tools_documentation`, `get_node` (docs mode) |
+| **Template Library**    | `search_templates`, `n8n_deploy_template` (2,700+ templates)             |
+| **Validation**          | `validate_workflow`, `n8n_validate_workflow`                             |
+| **Execution**           | `n8n_test_workflow`, `n8n_executions`                                    |
+| **Documentation**       | `tools_documentation`, `get_node` (docs mode)                            |
 
 ---
 
 ## 📊 Stats
 
-- **7 Core Skills** — 14 implementations (dual platform)
-- **72 Documentation Files** — ~44,000 lines
+- **7 Core Skills** — JavaScript, Python, Expressions, MCP Tools, Node Config, Validation, Workflow Patterns
+- **36 Documentation Files** — ~22,000 lines of n8n expertise
 - **40+ MCP Tools** — Full n8n API coverage
 - **2,700+ Templates** — Deployable via MCP
 - **2,000+ Nodes** — Searchable via AI
@@ -192,13 +211,13 @@ The n8n-mcp server provides:
 
 ## 🎯 Who Is This For?
 
-| Role | Benefit |
-|------|---------|
-| **Automation Engineers** | Accelerate workflow development with AI assistance |
-| **Low-Code Developers** | Get expert guidance without deep coding knowledge |
-| **DevOps Engineers** | Build integration workflows with best practices baked in |
-| **API Integrators** | Find the right nodes and validate configurations instantly |
-| **n8n Beginners** | Learn through AI-guided examples and patterns |
+| Role                     | Benefit                                                    |
+| ------------------------ | ---------------------------------------------------------- |
+| **Automation Engineers** | Accelerate workflow development with AI assistance         |
+| **Low-Code Developers**  | Get expert guidance without deep coding knowledge          |
+| **DevOps Engineers**     | Build integration workflows with best practices baked in   |
+| **API Integrators**      | Find the right nodes and validate configurations instantly |
+| **n8n Beginners**        | Learn through AI-guided examples and patterns              |
 
 ---
 
@@ -206,18 +225,19 @@ The n8n-mcp server provides:
 
 ```bash
 # Verify skill structure
-find .claude/skills -name "SKILL.md" | wc -l  # Should output: 7
+find .agents/skills -name "SKILL.md" | wc -l  # Should output: 7
 
 # Validate JSON configuration
-cat .mcp.json | jq .
-cat opencode.json | jq .
+cat .mcp.json.example | jq .
+cat opencode.json.example | jq .
 
 # Count documentation
-find . -name "*.md" | grep -v node_modules | wc -l  # Should output: 72
+find .agents/skills -name "*.md" | wc -l  # Should output: 36
 ```
 
 Skills are validated through:
-- OpenCode AI integration activation
+
+- Claude Code skill activation
 - Trigger keyword verification
 - Cross-reference link validation
 - Markdown syntax verification
@@ -229,6 +249,7 @@ Skills are validated through:
 ### When to Use This Repository
 
 ✅ **Perfect for:**
+
 - Building new workflows with AI guidance
 - Exploring n8n's 2,000+ node ecosystem
 - Validating configurations before deployment
@@ -236,6 +257,7 @@ Skills are validated through:
 - Debugging workflow issues
 
 ❌ **Not designed for:**
+
 - Traditional software development (no code to compile)
 - Runtime n8n execution (use n8n directly)
 - Workflow hosting (this is documentation only)
@@ -252,15 +274,6 @@ This repository stands on the shoulders of giants:
 
 ---
 
-## 📚 Additional Resources
-
-- [n8n Documentation](https://docs.n8n.io/)
-- [n8n Community](https://community.n8n.io/)
-- [MCP Specification](https://modelcontextprotocol.io/)
-- [Claude Code Docs](https://claude.ai/code)
-
----
-
 ## 📝 License
 
 This repository contains documentation and configuration for integrating with n8n and MCP tools. Please refer to the original projects for their respective licenses.
@@ -269,4 +282,4 @@ This repository contains documentation and configuration for integrating with n8
 
 **Made with ❤️ for the n8n and AI automation community**
 
-*Ready to supercharge your workflow automation? Start with the [Quick Start](#-quick-start-3-steps) above!*
+_Ready to supercharge your workflow automation? Start with the [Quick Start](#-quick-start-3-steps) above!_
