@@ -1,111 +1,32 @@
 # AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Scope
 
-## Repository Purpose
+- This repo exists to help agents interact with a live n8n instance by using the bundled skills together with the local MCP wiring in `opencode.json`.
+- This is a documentation/skill repository, not an app repo: there is no root `package.json`, workspace file, CI workflow, test runner, linter, formatter, or build pipeline to run.
+- Verify changes with file-level checks, not guessed `npm`/`pnpm` commands.
 
-This is a **knowledge repository**, not a traditional code project. It contains curated documentation (skills) that enable AI agents to assist users in building n8n workflows. The repository has no build system, tests, or compilation steps.
+## Skill Layout
 
-## Architecture
+- The real content lives in two committed mirror trees: `.agents/skills/` and `.claude/skills/`.
+- The README says `.claude/skills/` is symlinked from `.agents/skills/`, but the checked-in repo currently uses two normal directories. Keep them identical when editing skills.
+- `skills-lock.json` is the source-of-truth index for the 7 shipped skills and their upstream hashes from `czlonkowski/n8n-skills`.
+- Preserve the frontmatter in every `SKILL.md`; the `description` text is trigger text for agents, not just prose.
 
-### Dual Platform Skills
+## Config Files
 
-Skills are mirrored for two platforms:
+- Commit-worthy MCP templates are `.mcp.json.example` and `opencode.json.example`.
+- `opencode.json` is the local OpenCode MCP config that points this repo at `n8n-mcp` over stdio; when working here, assume that file is how OpenCode sessions are expected to reach n8n.
+- Local `.mcp.json` and `opencode.json` are developer-specific runtime config. In this repo they are untracked and can contain real `N8N_API_KEY` values; do not overwrite, commit, or quote their secrets unless explicitly asked.
+- `.gitignore` only ignores `.DS_Store`; do not assume local config files are protected by ignore rules.
 
-- `.claude/skills/` — Claude Code / Cloud Code
-- `.agents/skills/` — OpenCode Plugin
+## Useful Checks
 
-Both locations contain identical skill content. Skills are sourced from `czlonkowski/n8n-skills` (tracked in `skills-lock.json`).
+- Mirror check: `diff -qr .agents/skills .claude/skills`
+- Skill count: `find .agents/skills -name "SKILL.md" | wc -l`  → should be `7`
+- Markdown doc count: `find .agents/skills -name "*.md" | wc -l`  → should be `36`
 
-### The 7 Core Skills
+## Existing Instructions
 
-1. **n8n-code-javascript** — JavaScript in Code nodes (`$input`, `$json`, `$helpers`, HTTP requests, DateTime)
-2. **n8n-code-python** — Python in Code nodes (`_input`, `_json`, `_node`, standard library)
-3. **n8n-expression-syntax** — n8n `{{ }}` expression language validation
-4. **n8n-mcp-tools-expert** — MCP tool usage guide (node discovery, validation, workflow management)
-5. **n8n-node-configuration** — Operation-aware node configuration guidance
-6. **n8n-validation-expert** — Interpreting validation errors and fixing workflows
-7. **n8n-workflow-patterns** — Architectural patterns (webhook, HTTP API, database, AI agents, scheduled)
-
-### MCP Configuration
-
-- `.mcp.json` — For Claude Code / Cloud Code (MCP stdio mode)
-- `opencode.json` — For OpenCode environments
-
-Both require `N8N_API_URL` and `N8N_API_KEY` environment variables. Example files provided as `.mcp.json.example` and `opencode.json.example`.
-
-## Key Concepts
-
-### nodeType Format Differences
-
-**Critical**: Tools use different nodeType formats:
-
-| Tool Type         | Format             | Example                |
-| ----------------- | ------------------ | ---------------------- |
-| Search/Validate   | `nodes-base.*`     | `nodes-base.slack`     |
-| Workflow creation | `n8n-nodes-base.*` | `n8n-nodes-base.slack` |
-
-Use the format returned by `search_nodes` — it provides both formats.
-
-### Skill Interconnections
-
-Skills cross-reference each other:
-
-- Workflow patterns reference node configuration and validation skills
-- MCP tools expert references all other skills for tool selection
-- Code skills reference expression syntax for data access
-
-### Validation Profiles
-
-The n8n-mcp validation supports multiple profiles:
-
-- `minimal` — Required fields only (fast, permissive)
-- `runtime` — Values + types (default, recommended)
-- `ai-friendly` — Reduced false positives
-- `strict` — Maximum validation (production)
-
-## Common Tasks
-
-### Adding a New Skill
-
-1. Create skill directory in both `.claude/skills/` and `.agents/skills/`
-2. Add `SKILL.md` with frontmatter (name, description)
-3. Update `skills-lock.json` with source tracking
-4. Ensure content is identical in both locations
-
-### Updating MCP Configuration
-
-Edit `.mcp.json` or `opencode.json` with credentials:
-
-```json
-{
-  "N8N_API_URL": "http://localhost:5678",
-  "N8N_API_KEY": "your-api-key-here"
-}
-```
-
-Note: Actual credentials are in `.gitignore` - only commit the `.example` files.
-
-### Validating Skill Structure
-
-```bash
-# Verify skill count
-find .claude/skills -name "SKILL.md" | wc -l  # Should be 7
-
-# Count documentation files
-find . -name "*.md" | grep -v node_modules | wc -l
-```
-
-## Repository Stats
-
-- 7 core skills (14 implementations total - dual platform)
-- ~72 documentation files (~44,000 lines)
-- 40+ MCP tools available via n8n-mcp
-- 2,700+ n8n templates accessible
-- 2,000+ nodes searchable
-
-## External References
-
-- n8n documentation: https://docs.n8n.io/
-- n8n MCP server: https://github.com/czlonkowski/n8n-mcp
-- Original skills: https://github.com/czlonkowski/n8n-skills
+- `CLAUDE.md` in `HEAD` is only `@AGENTS.md`. If you touch `CLAUDE.md`, keep it as a pointer instead of duplicating instructions.
+- For skill behavior changes, update the skill docs first; only update `README.md` when the repo-level overview also needs to change.
