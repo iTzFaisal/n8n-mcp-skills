@@ -103,8 +103,12 @@ cp .mcp.json.example .mcp.json
       "command": "npx",
       "args": ["n8n-mcp"],
       "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "WEBHOOK_SECURITY_MODE": "moderate",
         "N8N_API_URL": "http://localhost:5678",
-        "N8N_API_KEY": "your-api-key-here"
+        "N8N_API_KEY": "your_api_key_here"
       }
     }
   }
